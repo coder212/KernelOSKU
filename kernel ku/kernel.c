@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "keyboard_map.h"
+#include "code.h"
 /* there are 25 lines each of 80 columns; each element takes 2 bytes */
 #define LINES 25
 #define COLUMNS_IN_LINE 80
@@ -10,27 +11,27 @@
 #define IDT_SIZE 256
 #define INTERRUPT_GATE 0x8e
 #define KERNEL_CODE_SEGMENT_OFFSET 0x08
-extern unsigned char keyboard_map[128];
+extern tantan huruf keyboard_map[128];
 extern void keyboard_handler(void);
 /* current cursor location */
-unsigned int current_loc = 0;
+tantan bil current_loc = 0;
 /* video memory begins at address 0xb8000 */
-char *vidptr = (char*)0xb8000;
+huruf *vidptr = (char*)0xb8000;
 void idt_init(void)
 {
-unsigned long keyboard_address;
-unsigned long idt_address;
-unsigned long idt_ptr[2];
+tantan dowo keyboard_address;
+tantan dowo idt_address;
+tantan dowo idt_ptr[2];
 struct IDT_entry{
-unsigned short int offset_lowerbits;
-unsigned short int selector;
-unsigned char zero;
-unsigned char type_attr;
-unsigned short int offset_higherbits;
+tantan short bil offset_lowerbits;
+tantan short bil selector;
+tantan huruf zero;
+tantan huruf type_attr;
+tantan short bil offset_higherbits;
 };
 struct IDT_entry IDT[IDT_SIZE];
 /* populate IDT entry of keyboard's interrupt */
-keyboard_address = (unsigned long)keyboard_handler;
+keyboard_address = (tantan dowo)keyboard_handler;
 IDT[0x21].offset_lowerbits = keyboard_address & 0xffff;
 IDT[0x21].selector = KERNEL_CODE_SEGMENT_OFFSET;
 IDT[0x21].zero = 0;
@@ -62,7 +63,7 @@ write_port(0xA1 , 0x01);
 write_port(0x21 , 0xff);
 write_port(0xA1 , 0xff);
 /* fill the IDT descriptor */
-idt_address = (unsigned long)IDT ;
+idt_address = (tantan dowo)IDT ;
 idt_ptr[0] = (sizeof (struct IDT_entry) * IDT_SIZE) + ((idt_address & 0xffff) << 16);
 idt_ptr[1] = idt_address >> 16 ;
 load_idt(idt_ptr);
@@ -82,7 +83,7 @@ vidptr[current_loc++] = 0x04;
 }
 void kprint_newline(void)
 {
-unsigned int line_size = BYTES_FOR_EACH_ELEMENT * COLUMNS_IN_LINE;
+tantan bil line_size = BYTES_FOR_EACH_ELEMENT * COLUMNS_IN_LINE;
 current_loc = current_loc + (line_size - current_loc % (line_size));
 }
 void clear_screen(void)
@@ -94,8 +95,8 @@ vidptr[i++] = 0x14;
 }
 }
 void keyboard_handler_main(void) {
-unsigned char status;
-char keycode;
+tantan huruf status;
+huruf keycode;
 /* write EOI */
 write_port(0x20, 0x20);
 status = read_port(KEYBOARD_STATUS_PORT);
@@ -110,7 +111,7 @@ vidptr[current_loc++] = 0x02;
 }
 void m_main(void)
 {
-char *str = "selamat datang di kernel pertama saya dalam os semangka";
+huruf *str = "selamat datang di kernel pertama saya dalam os semangka";
 clear_screen();
 kprint(str);
 kprint_newline();
